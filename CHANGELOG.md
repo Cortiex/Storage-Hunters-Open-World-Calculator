@@ -1,6 +1,52 @@
 # Changelog
 
-All notable changes to the **Storage Hunters: Open World Mutation Calculator** will be documented in this file.
+All notable changes to the **Storage Hunters: Open World Calculator** will be documented in this file.
+
+## [0.3.6] - 2026-07-28
+
+### Added
+
+- Added a four-step Mutation Finder guide that opens once per browser session and can be reopened from the navigation.
+- Restored a simplified `Copy Result` image export for the Value Calculator, including an automatic PNG download fallback when image clipboard access is unavailable.
+- Added `CALCULATIONS.md` with the complete Value Calculator formula, Mutation Finder method, symbols, rounding behavior, and numerical solution.
+- Added automatic category counts and responsive mutation loading/error states.
+
+### Changed
+
+- Both calculators now accept a base item value directly instead of selecting an item from an index.
+- Mutation names, categories, multipliers, and visual styles now load exclusively from the current `Module:MutationData` response.
+- All module mutations are rendered; non-numeric entries remain visible but disabled.
+- Washing mutations remain mutually exclusive and automatically remove a selected Dirty mutation.
+- Time Capsule mutations are now mutually exclusive.
+- Rebuilt the interface around the supplied wiki design references while retaining Rubik for headings and labels.
+- Updated the hero, navigation, input controls, mutation categories, result panel, responsive behavior, and page background.
+- Mutation choices now use four compact tiles per desktop row with multiplier badges and circular selection indicators.
+- Mutation cards now use a cleaner two-line layout without the repeated “Mutation” subtitle, keeping long values such as `Unobtainable` on one line.
+- Mutation border colors are derived from module styles; wide color gradients receive a full gradient border, while dark gradients use their strongest non-black module color for selection states.
+- Refined the Rainbow border, restored Corrupted's green selection color, and retained Void's dark-purple styling.
+- Simplified decorative shapes around the item form, unified the page into a darker 0.3.5-inspired frame, and restored the compact creator/version/GitHub-icon footer layout.
+- Selected mutations in both output panels now use their current module colors and gradients, and linked footer elements are brighter than the surrounding credit text.
+- The Value Calculator output now lists the base value, and its exported PNG mirrors the modern output panel with every displayed factor, matching mutation chips, Low Items Markup, and the total multiplier.
+- Moved the `01 · Input` headings outside their field panels so the Input and Modifiers sections share the same hierarchy and only form controls remain inside the input boxes.
+- Reordered the Value Calculator and exported PNG outputs to follow the calculation from Base Value through each multiplier, placing Final Value at the bottom as the end result.
+- Unified mutation name colors and text gradients across the selection grids, output chips, and exported PNG while retaining the selection grid's original card layout, side accents, and separate multiplier badges.
+- Reworked the copied result into a compact card containing only calculation data, with no output heading, credits, or version footer, and shortened both calculator reset actions to `Reset`.
+- Colored event subgroup text without adding badges or outlines: Moonlit Event and Rain Event now mix their live colors into the same softer pastel palette.
+- Rebuilt the copied result as a near one-to-one rendering of the website output panel, from Base Value through Final Value, without separate statistic boxes or the output heading.
+- Final Value now automatically reduces its font size to remain on one line on the website and in exported images, even for very large values.
+- Mint and Perfect now require exactly 100% condition on both calculators; they become unavailable below 100%, are removed if condition drops, and set condition to 100% when selected.
+- Clipped the complete exported-card content to its rounded outer shape so bottom fills and separator edges no longer extend beyond the curved corners.
+- Footer version links now open the hosted GitHub changelog directly, while internal calculator navigation continues to use deployment-safe relative URLs.
+- Reduced redundant interface copy and moved calculation details out of the website into `CALCULATIONS.md`.
+- Updated README documentation and all visible version labels to 0.3.6.
+
+### Removed
+
+- Removed the live item index, item search, area filters, item images, and `Module:ItemData` dependency.
+- Removed the Custom Item toggle; the base value field is always available directly.
+- Removed all local mutation-data lists and fallback snapshots.
+- Removed the visible Washing rule notice while preserving its behavior.
+- Removed formula panels from the calculator pages.
 
 ## [0.3.5] - 2026-07-12
 

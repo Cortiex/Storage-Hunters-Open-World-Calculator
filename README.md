@@ -1,64 +1,54 @@
-# Storage Hunters: Open World - Mutation Calculator
+# Storage Hunters: Open World — Calculator
 
-A browser-based mutation calculator for **Storage Hunters: Open World** on Roblox, that helps players quickly calculate item values based on mutations, condition, and grades.
+A browser calculator for **Storage Hunters: Open World** on Roblox. It calculates item values from base value, condition, grade, and mutations, or works backwards to estimate one unknown mutation multiplier.
 
-**Use the calculator here:**
-**[Open Mutation Calculator](https://vantacry.github.io/Storage-Hunters-Open-World-Calculator/)**
+**[Open Storage Hunters Calculator](https://vantacry.github.io/Storage-Hunters-Open-World-Calculator/)**
+
+Current release: **v0.3.6**
 
 ## Features
 
-- Calculate final item values based on:
-  - Base item value
-  - Mutations
-  - Condition
-  - Grades
+- Calculate an item's final value from its base value and modifiers.
+- Copy the current Value Calculator result as a styled PNG image, with a download fallback when clipboard images are unavailable.
+- Estimate one unknown mutation multiplier from a known sell price.
+- Guided four-step introduction for the Mutation Finder.
+- Enter any base value directly—no item index required.
+- Load every mutation, multiplier, category, and style directly from the current module.
+- Keep item data, item images, and the former item index out of the calculator.
+- Enforce exclusive Washing and Time Capsule mutation selections automatically.
+- Allow Mint and Perfect only at exactly 100% condition and keep that requirement synchronized automatically.
+- Responsive layout for desktop, tablet, and mobile.
 
-- Calculate NEW mutations multipliers with:
-  - Base item
-  - Known mutations
-  - Condition
-  - Grades
-- Search and select items from the item index
-- Automatically load item values directly into the calculator
-- Uses live item data from the Storage Hunters Wiki
-- Copy results as a styled image showing:
-  - Selected item
-  - Final value
-  - Stats
-  - Active mutations
+## Mutation data
 
-- No download or installation required
+All mutation data is requested at runtime from [Module:MutationData](https://storagehunters.fandom.com/wiki/Module:MutationData). The project does not contain a fallback mutation list. This keeps names, categories, multipliers, and visual styles synchronized with the module automatically.
 
-## Item Data
+Numeric mutations—including 1x mutations—are selectable. Non-numeric entries remain visible but disabled. If the request fails, the calculator shows a retry message instead of using potentially outdated values.
 
-The calculator loads item data directly from the Storage Hunters Wiki module:
+## Calculation documentation
 
-**[Storage Hunters Wiki — Module:ItemData](https://storagehunters.fandom.com/wiki/Module:ItemData)**
+The complete Value Calculator and Mutation Finder formulas, symbols, rounding behavior, and numerical solution are documented in **[CALCULATIONS.md](./CALCULATIONS.md)**.
 
-## Updates & Changelog
+## Project structure
 
-The calculator will be updated whenever needed, including when:
-
-- New mutations are discovered
-- Mutation multipliers change
-- Wiki item data is updated
-- New grades or mechanics are added
-- Bugs are reported
-- Improvements are made
-
-View all version changes here:
-**[View Changelog](./CHANGELOG.md)**
+```text
+index.html                 Value Calculator
+mutationCalculator.html    Mutation Finder and guide
+css/style.css              Shared responsive design
+js/shared.js               Live mutation loading and shared controls
+js/script.js               Forward value calculation
+js/reverseCalc.js          Reverse calculation and guide behavior
+CALCULATIONS.md             Formula reference
+```
 
 ## Feedback
 
-Found an incorrect value, missing mutation, bug, or have an idea for improvement?
-Feel free to reach out or open an **[Issue](https://github.com/vantacry/Storage-Hunters-Open-World-Calculator/issues/new)**
+Found an incorrect value, missing mutation, bug, or have an idea for improvement? Open an **[Issue](https://github.com/vantacry/Storage-Hunters-Open-World-Calculator/issues/new)**.
 
 ## Credits
 
 - **Creator:** [Vantacry](https://guns.lol/vantacry)
-- **Contributor:** [FieryWolfLevi](https://github.com/FieryWolfLevi) — `Storage Hunters: Open World Wiki founder`
-- **Wiki:** [Storage Hunters: Open World Wiki](<https://storagehunters.fandom.com/wiki/Storage_Hunters:_Open_World_(ROBLOX)_Wiki>)
+- **Contributor:** [FieryWolfLevi](https://github.com/FieryWolfLevi)
 - **Game:** [Storage Hunters: Open World](https://www.roblox.com/games/98800969324557/Storage-Hunters-Open-World)
 
-Thanks for using the calculator and helping improve it for the Storage Hunters: Open World Community.
+See [CHANGELOG.md](./CHANGELOG.md) for version history.

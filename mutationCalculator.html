@@ -3,175 +3,107 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Storage Hunters: Mutation Finder</title>
+    <meta name="description" content="Find an unknown Storage Hunters mutation multiplier from an item's sell price." />
+    <title>Storage Hunters — Mutation Finder</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <!-- Loading overlay shown while wiki data fetches -->
-    <div
-      id="loadingOverlay"
-      class="loading-overlay"
-      aria-live="polite"
-      aria-label="Loading"
-    >
-      <div class="loader-card">
-        <div class="loader-spinner"></div>
-        <div class="loader-title">Storage Hunters</div>
-        <div class="loader-sub" id="loaderStatus">Fetching live Wiki data…</div>
-      </div>
-    </div>
-
-    <div class="container">
-      <header class="wiki-banner">
-        <h1 class="wiki-title">Mutation Finder</h1>
-        <p class="wiki-subtitle">
-          Reverse-calculate an unknown mutation multiplier from a sell price.
-          Select your known mutations, enter the sell price, and the calculator
-          will determine the unknown mutation's multiplier.
-        </p>
+    <main class="app-page accent-blue">
+      <header class="page-hero">
+        <div class="hero-content"><div class="eyebrow">REVERSE CALCULATOR</div><h1>Mutation Finder</h1><p>Discover the multiplier behind an unknown mutation.</p></div>
       </header>
 
-      <div class="tab-nav">
-        <a href="index.html" class="tab-link">Value Calculator</a>
-        <a href="mutationCalculator.html" class="tab-link active"
-          >Mutation Finder</a
-        >
+      <nav class="calculator-nav" aria-label="Calculator pages">
+        <a href="index.html">Value Calculator</a>
+        <a href="mutationCalculator.html" class="active" aria-current="page">Mutation Finder</a>
+        <button id="finderHelp" class="help-button" type="button">How it works</button>
+      </nav>
+
+      <div class="calculator-layout">
+        <div class="calculator-content">
+          <section class="input-section" aria-labelledby="details-title">
+            <div class="subsection-heading">
+              <div><div class="eyebrow">01 · INPUT</div><h2 id="details-title">Known Values</h2></div>
+            </div>
+            <div class="input-panel">
+              <div class="inputs reverse-inputs">
+                <div class="field"><label for="base">Base item value</label><div class="input-with-prefix"><span>$</span><input id="base" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00" autofocus /></div></div>
+                <div class="field"><label for="sellPrice">Known sell price</label><div class="input-with-prefix"><span>$</span><input id="sellPrice" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00" /></div></div>
+                <div class="field"><label for="condition">Condition</label><div class="input-with-suffix"><input id="condition" type="number" min="0" max="100" step="any" inputmode="decimal" placeholder="100" /><span>%</span></div></div>
+                <div class="field"><label for="grade">Grade</label><select id="grade"><option value="1">No Grade — 100%</option><option value="0.55">Replica — 55%</option><option value="0.85">★ — 85%</option><option value="1.35">★★ — 135%</option><option value="2">★★★ — 200%</option></select></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="mutation-picker" aria-labelledby="mutations-title">
+            <div class="subsection-heading">
+              <div><div class="eyebrow purple">02 · MODIFIERS</div><h2 id="mutations-title">Known Mutations</h2></div>
+            </div>
+            <div id="mutationArea"></div>
+          </section>
+        </div>
+
+        <aside class="result" aria-labelledby="result-title">
+          <div class="result-topline"></div>
+          <div class="eyebrow">03 · OUTPUT</div>
+          <h2 id="result-title">Unknown Mutation</h2>
+          <div class="final-value"><span>Required multiplier</span><b id="unknownMulti">?</b></div>
+          <dl class="result-list">
+            <div class="selected-mutations"><dt>Known mutations</dt><dd id="knownMutationsOut" class="active-multipliers"><span class="no-selection">None</span></dd></div>
+            <div><dt>Known multiplier</dt><dd id="knownMultiOut">1x</dd></div>
+            <div><dt>Low items markup</dt><dd id="markupOut">?</dd></div>
+            <div><dt>Condition factor</dt><dd id="cond">?</dd></div>
+            <div class="total-row"><dt>Grade factor</dt><dd id="gradeOut">1x</dd></div>
+          </dl>
+          <button class="reset-button" onclick="resetCalc()" type="button">Reset</button>
+        </aside>
       </div>
 
-      <!-- Searchable item index loaded live from the Wiki. -->
-      <section class="item-index" aria-labelledby="itemIndexTitle">
-        <div class="index-controls">
-          <div class="index-head">
-            <div id="itemIndexTitle" class="index-title">Item Index</div>
+      <dialog id="finderGuide" class="guide-dialog" aria-label="Mutation Finder guide">
+        <div class="guide-shell">
+          <button id="guideClose" class="guide-close" type="button" aria-label="Close guide">×</button>
+          <div class="guide-progress" aria-hidden="true"><span class="active"></span><span></span><span></span><span></span></div>
+          <section class="guide-step active" data-guide-step="0">
+            <div class="guide-number">01</div>
+            <div class="eyebrow">WELCOME</div>
+            <h2 id="guideTitle">Find an Unknown Mutation</h2>
+            <p>With the Mutation Finder, you can determine the multiplier of one unknown mutation from an item's base value and its final sell price.</p>
+          </section>
+          <section class="guide-step" data-guide-step="1">
+            <div class="guide-number">02</div>
+            <div class="eyebrow">ITEM VALUES</div>
+            <h2>Enter What You Know</h2>
+            <p>Enter the item's original base value and the sell price shown in-game. Add its condition and grade so the same modifiers can be reconstructed.</p>
+          </section>
+          <section class="guide-step" data-guide-step="2">
+            <div class="guide-number">03</div>
+            <div class="eyebrow">KNOWN MUTATIONS</div>
+            <h2>Select Existing Modifiers</h2>
+            <p>Select every mutation you already know. Do not select the mutation whose multiplier you are trying to discover.</p>
+          </section>
+          <section class="guide-step" data-guide-step="3">
+            <div class="guide-number">04</div>
+            <div class="eyebrow">YOUR RESULT</div>
+            <h2>Read the Required Multiplier</h2>
+            <p>The result panel updates automatically. Its required multiplier is the estimated value of the missing mutation.</p>
+          </section>
+          <div class="guide-actions">
+            <button id="guideBack" class="guide-secondary" type="button">Back</button>
+            <span id="guideCounter">Step 1 of 4</span>
+            <button id="guideNext" class="guide-primary" type="button">Next</button>
           </div>
-          <div class="index-search">
-            <label for="itemSearch">Search Items</label
-            ><input
-              id="itemSearch"
-              type="search"
-              placeholder="Search by item name"
-              autocomplete="off"
-            />
-          </div>
-          <div
-            id="areaFilters"
-            class="area-filters"
-            aria-label="Area filters"
-          ></div>
         </div>
-        <div class="item-grid-scroll">
-          <div id="itemGrid" class="item-grid" aria-live="polite"></div>
-        </div>
-      </section>
+      </dialog>
 
-      <!-- User inputs: condition, grade, custom value, and sell price -->
-      <div class="inputs">
-        <div>
-          <label>Condition (%)</label
-          ><input
-            id="condition"
-            type="number"
-            min="0"
-            max="100"
-            placeholder="Enter condition"
-          />
-        </div>
-        <div>
-          <label>Grade</label
-          ><select id="grade">
-            <option value="1" data-label="No Grade">No Grade</option>
-            <option value="0.55" data-label="Replica">Replica (55%)</option>
-            <option value="0.85" data-label="★">★ (85%)</option>
-            <option value="1.35" data-label="★★">★★ (135%)</option>
-            <option value="2" data-label="★★★">★★★ (200%)</option>
-          </select>
-        </div>
-        <div class="custom-value-wrapper">
-          <label class="custom-toggle-label">
-            <input type="checkbox" id="customToggle" />
-            <span>Unknown/Custom Item</span>
-          </label>
-          <div id="customValueContainer">
-            <input
-              id="base"
-              type="number"
-              min="0"
-              placeholder="Enter value ($)"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Sell price input -->
-      <div class="inputs" style="margin-top: 15px">
-        <div style="grid-column: 1 / -1">
-          <label>Sell Price ($)</label
-          ><input
-            id="sellPrice"
-            type="number"
-            min="0"
-            placeholder="Enter sell price ($)"
-          />
-        </div>
-      </div>
-
-      <!-- Mutation cards are inserted here automatically by JavaScript. -->
-      <div id="mutationArea"></div>
-
-      <!-- Reverse calculation output -->
-      <div class="result">
-        <div>
-          Selected Item: <b id="selectedItemOut">Unknown/Custom Item</b>
-        </div>
-        <div>Known Mutations: <b id="knownMutationsOut">None</b></div>
-        <div>Known Multiplier: <b id="knownMultiOut">1x</b></div>
-        <div>Low Items Markup: <b id="markupOut">1x</b></div>
-        <div>Condition Factor: <b id="cond">1x</b></div>
-        <div>Grade Factor: <b id="gradeOut">1x</b></div>
-        <div class="big" style="color: var(--green)">
-          Unknown Mutation Multiplier:<br /><b id="unknownMulti">?</b>
-        </div>
-        <div class="actions" style="grid-template-columns: 1fr">
-          <button onclick="resetCalc()" type="button">Reset</button>
-        </div>
-      </div>
-      <div class="footer">
-        Created by
-        <a
-          href="https://guns.lol/vantacry"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Vantacry</a
-        >
-        &amp;
-        <a
-          href="https://github.com/FieryWolfLevi"
-          target="_blank"
-          rel="noopener noreferrer"
-          >FieryWolfLevi</a
-        >
-        <span>&bull;</span>
-        <a
-          href="https://github.com/vantacry/Storage-Hunters-Open-World-Calculator/blob/main/CHANGELOG.md"
-          target="_blank"
-          rel="noopener noreferrer"
-          >v0.3.5</a
-        >
-        <span>&bull;</span>
-        <a
-          class="github-link"
-          href="https://github.com/vantacry/Storage-Hunters-Open-World-Calculator"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Open GitHub repository"
-          ><svg viewBox="0 0 16 16" aria-hidden="true">
-            <path
-              d="M8 0C3.58 0 0 3.67 0 8.2c0 3.62 2.29 6.69 5.47 7.78.4.08.55-.18.55-.4 0-.2-.01-.87-.01-1.58-2.01.38-2.53-.5-2.69-.96-.09-.24-.48-.96-.82-1.15-.28-.16-.68-.55-.01-.56.63-.01 1.08.59 1.23.84.72 1.24 1.87.89 2.33.68.07-.53.28-.89.51-1.09-1.78-.21-3.64-.91-3.64-4.03 0-.89.31-1.62.82-2.19-.08-.21-.36-1.04.08-2.16 0 0 .67-.22 2.2.84.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.95.08 2.16.51.57.82 1.3.82 2.19 0 3.13-1.87 3.82-3.65 4.03.29.26.54.75.54 1.52 0 1.09-.01 1.97-.01 2.24 0 .22.15.48.55.4A8.12 8.12 0 0 0 16 8.2C16 3.67 12.42 0 8 0Z"
-            /></svg
-        ></a>
-      </div>
-    </div>
+      <footer class="footer">
+        <span>Created by <a href="https://guns.lol/vantacry" target="_blank" rel="noopener noreferrer">Vantacry</a> &amp; <a href="https://github.com/FieryWolfLevi" target="_blank" rel="noopener noreferrer">FieryWolfLevi</a></span>
+        <span aria-hidden="true">•</span>
+        <a href="https://github.com/vantacry/Storage-Hunters-Open-World-Calculator/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">v0.3.6</a>
+        <span aria-hidden="true">•</span>
+        <a class="footer-github" href="https://github.com/vantacry/Storage-Hunters-Open-World-Calculator" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub repository"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.67 0 8.2c0 3.62 2.29 6.69 5.47 7.78.4.08.55-.18.55-.4 0-.2-.01-.87-.01-1.58-2.01.38-2.53-.5-2.69-.96-.09-.24-.48-.96-.82-1.15-.28-.16-.68-.55-.01-.56.63-.01 1.08.59 1.23.84.72 1.24 1.87.89 2.33.68.07-.53.28-.89.51-1.09-1.78-.21-3.64-.91-3.64-4.03 0-.89.31-1.62.82-2.19-.08-.21-.36-1.04.08-2.16 0 0 .67-.22 2.2.84.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.95.08 2.16.51.57.82 1.3.82 2.19 0 3.13-1.87 3.82-3.65 4.03.29.26.54.75.54 1.52 0 1.09-.01 1.97-.01 2.24 0 .22.15.48.55.4A8.12 8.12 0 0 0 16 8.2C16 3.67 12.42 0 8 0Z" /></svg></a>
+      </footer>
+    </main>
     <script src="js/shared.js"></script>
     <script src="js/reverseCalc.js"></script>
   </body>

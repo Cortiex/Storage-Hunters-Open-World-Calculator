@@ -3,170 +3,90 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Storage Hunters: Open World Mutation Calculator</title>
+    <meta name="description" content="Calculate Storage Hunters item values from base value, condition, grade, and mutations." />
+    <title>Storage Hunters — Value Calculator</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <!-- Loading overlay shown while wiki data fetches -->
-    <div
-      id="loadingOverlay"
-      class="loading-overlay"
-      aria-live="polite"
-      aria-label="Loading"
-    >
-      <div class="loader-card">
-        <div class="loader-spinner"></div>
-        <div class="loader-title">Storage Hunters</div>
-        <div class="loader-sub" id="loaderStatus">Fetching live Wiki data…</div>
-      </div>
-    </div>
-
-    <div class="container">
-      <header class="wiki-banner">
-        <h1 class="wiki-title">
-          Storage Hunters: Open World Mutation Calculator
-        </h1>
-        <p class="wiki-subtitle">
-          An unofficial community calculator for item values, mutations,
-          condition scaling, and grade multipliers.
-        </p>
+    <main class="app-page">
+      <header class="page-hero">
+        <div class="hero-content"><div class="eyebrow">VALUE CALCULATOR</div><h1>Storage Hunters Calculator</h1><p>Item values, grades, conditions, and mutations.</p></div>
       </header>
 
-      <div class="tab-nav">
-        <a href="index.html" class="tab-link active">Value Calculator</a>
-        <a href="mutationCalculator.html" class="tab-link">Mutation Finder</a>
+      <nav class="calculator-nav" aria-label="Calculator pages">
+        <a href="index.html" class="active" aria-current="page">Value Calculator</a>
+        <a href="mutationCalculator.html">Mutation Finder</a>
+      </nav>
+
+      <div class="calculator-layout">
+        <div class="calculator-content">
+          <section class="input-section" aria-labelledby="details-title">
+            <div class="subsection-heading">
+              <div><div class="eyebrow">01 · INPUT</div><h2 id="details-title">Item Setup</h2></div>
+            </div>
+            <div class="input-panel">
+              <div class="inputs">
+                <div class="field field-wide">
+                  <label for="base">Base item value</label>
+                  <div class="input-with-prefix"><span>$</span><input id="base" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00" autofocus /></div>
+                </div>
+                <div class="field">
+                  <label for="condition">Condition</label>
+                  <div class="input-with-suffix"><input id="condition" type="number" min="0" max="100" step="any" inputmode="decimal" placeholder="100" /><span>%</span></div>
+                </div>
+                <div class="field">
+                  <label for="grade">Grade</label>
+                  <select id="grade">
+                    <option value="1">No Grade — 100%</option>
+                    <option value="0.55">Replica — 55%</option>
+                    <option value="0.85">★ — 85%</option>
+                    <option value="1.35">★★ — 135%</option>
+                    <option value="2">★★★ — 200%</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="mutation-picker" aria-labelledby="mutations-title">
+            <div class="subsection-heading">
+              <div><div class="eyebrow purple">02 · MODIFIERS</div><h2 id="mutations-title">Mutations</h2></div>
+            </div>
+            <div id="mutationArea"></div>
+          </section>
+        </div>
+
+        <aside class="result" aria-labelledby="result-title">
+          <div class="result-topline"></div>
+          <div class="eyebrow">03 · OUTPUT</div>
+          <h2 id="result-title">Estimated Value</h2>
+          <dl class="result-list">
+            <div><dt>Base value</dt><dd id="baseOut">$0.00</dd></div>
+            <div><dt>Mutation multiplier</dt><dd id="muti">1x</dd></div>
+            <div class="selected-mutations"><dt>Selected mutations</dt><dd id="activeMultipliers" class="active-multipliers" aria-live="polite"><span class="no-selection">None</span></dd></div>
+            <div><dt>Low items markup</dt><dd id="markupOut">1x</dd></div>
+            <div><dt>Condition factor</dt><dd id="cond">1x</dd></div>
+            <div><dt>Grade factor</dt><dd id="gradeOut">1x</dd></div>
+            <div class="total-row"><dt>Total multiplier</dt><dd id="total">1x</dd></div>
+          </dl>
+          <div class="final-value"><span>Final value</span><b id="value">$0.00</b></div>
+          <div class="result-actions">
+            <button class="reset-button" onclick="resetCalc()" type="button">Reset</button>
+            <button id="copyResult" class="copy-result-button" type="button">Copy Result</button>
+          </div>
+          <div id="copyStatus" class="copy-status" aria-live="polite"></div>
+        </aside>
       </div>
 
-      <!-- Searchable item index loaded live from the Wiki. Clicking an item copies its base value into the calculator. -->
-      <section class="item-index" aria-labelledby="itemIndexTitle">
-        <div class="index-controls">
-          <div class="index-head">
-            <div id="itemIndexTitle" class="index-title">Item Index</div>
-          </div>
-          <div class="index-search">
-            <label for="itemSearch">Search Items</label
-            ><input
-              id="itemSearch"
-              type="search"
-              placeholder="Search by item name"
-              autocomplete="off"
-            />
-          </div>
-          <div
-            id="areaFilters"
-            class="area-filters"
-            aria-label="Area filters"
-          ></div>
-        </div>
-        <div class="item-grid-scroll">
-          <div id="itemGrid" class="item-grid" aria-live="polite"></div>
-        </div>
-      </section>
-
-      <!-- User inputs: item condition, grade multiplier, and optional custom value. -->
-      <div class="inputs">
-        <div>
-          <label>Condition (%)</label
-          ><input
-            id="condition"
-            type="number"
-            min="0"
-            max="100"
-            placeholder="Enter condition"
-          />
-        </div>
-        <div>
-          <label>Grade</label
-          ><select id="grade">
-            <option value="1" data-label="No Grade">No Grade</option>
-            <option value="0.55" data-label="Replica">Replica (55%)</option>
-            <option value="0.85" data-label="★">★ (85%)</option>
-            <option value="1.35" data-label="★★">★★ (135%)</option>
-            <option value="2" data-label="★★★">★★★ (200%)</option>
-          </select>
-        </div>
-        <div class="custom-value-wrapper">
-          <label class="custom-toggle-label">
-            <input type="checkbox" id="customToggle" />
-            <span>Unknown/Custom Item</span>
-          </label>
-          <div id="customValueContainer">
-            <input
-              id="base"
-              type="number"
-              min="0"
-              placeholder="Enter value ($)"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Mutation cards are inserted here automatically by JavaScript. -->
-      <div id="mutationArea"></div>
-      <!-- Calculation output and quick actions. -->
-      <div class="result">
-        <div>
-          Selected Item: <b id="selectedItemOut">Unknown/Custom Item</b>
-        </div>
-        <div class="multiplier-result-row">
-          <span>Mutation Multiplier:</span
-          ><span class="result-value-stack"
-            ><b id="muti">1x</b
-            ><span
-              id="activeMultipliers"
-              class="active-multipliers"
-              aria-live="polite"
-            ></span
-          ></span>
-        </div>
-        <div>Low Items Markup: <b id="markupOut">1x</b></div>
-        <div>Condition Factor: <b id="cond">1x</b></div>
-        <div>Grade Factor: <b id="gradeOut">1x</b></div>
-        <div>Total Multiplier: <b id="total">1x</b></div>
-        <div class="big">Final Value:<br /><b id="value">$0.00</b></div>
-        <div class="actions">
-          <button onclick="resetCalc()" type="button">Reset</button
-          ><button id="copyResult" type="button">Copy Result</button>
-        </div>
-        <div id="copyStatus" class="copy-status" aria-live="polite"></div>
-      </div>
-      <div class="footer">
-        Created by
-        <a
-          href="https://guns.lol/vantacry"
-          target="_blank"
-          rel="noopener noreferrer"
-          >Vantacry</a
-        >
-        &amp;
-        <a
-          href="https://github.com/FieryWolfLevi"
-          target="_blank"
-          rel="noopener noreferrer"
-          >FieryWolfLevi</a
-        >
-        <span>&bull;</span>
-        <a
-          href="https://github.com/vantacry/Storage-Hunters-Open-World-Calculator/blob/main/CHANGELOG.md"
-          target="_blank"
-          rel="noopener noreferrer"
-          >v0.3.5</a
-        >
-        <span>&bull;</span>
-        <a
-          class="github-link"
-          href="https://github.com/vantacry/Storage-Hunters-Open-World-Calculator"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Open GitHub repository"
-          ><svg viewBox="0 0 16 16" aria-hidden="true">
-            <path
-              d="M8 0C3.58 0 0 3.67 0 8.2c0 3.62 2.29 6.69 5.47 7.78.4.08.55-.18.55-.4 0-.2-.01-.87-.01-1.58-2.01.38-2.53-.5-2.69-.96-.09-.24-.48-.96-.82-1.15-.28-.16-.68-.55-.01-.56.63-.01 1.08.59 1.23.84.72 1.24 1.87.89 2.33.68.07-.53.28-.89.51-1.09-1.78-.21-3.64-.91-3.64-4.03 0-.89.31-1.62.82-2.19-.08-.21-.36-1.04.08-2.16 0 0 .67-.22 2.2.84.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.95.08 2.16.51.57.82 1.3.82 2.19 0 3.13-1.87 3.82-3.65 4.03.29.26.54.75.54 1.52 0 1.09-.01 1.97-.01 2.24 0 .22.15.48.55.4A8.12 8.12 0 0 0 16 8.2C16 3.67 12.42 0 8 0Z"
-            /></svg
-        ></a>
-      </div>
-    </div>
+      <footer class="footer">
+        <span>Created by <a href="https://guns.lol/vantacry" target="_blank" rel="noopener noreferrer">Vantacry</a> &amp; <a href="https://github.com/FieryWolfLevi" target="_blank" rel="noopener noreferrer">FieryWolfLevi</a></span>
+        <span aria-hidden="true">•</span>
+        <a href="https://github.com/vantacry/Storage-Hunters-Open-World-Calculator/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">v0.3.6</a>
+        <span aria-hidden="true">•</span>
+        <a class="footer-github" href="https://github.com/vantacry/Storage-Hunters-Open-World-Calculator" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub repository"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.67 0 8.2c0 3.62 2.29 6.69 5.47 7.78.4.08.55-.18.55-.4 0-.2-.01-.87-.01-1.58-2.01.38-2.53-.5-2.69-.96-.09-.24-.48-.96-.82-1.15-.28-.16-.68-.55-.01-.56.63-.01 1.08.59 1.23.84.72 1.24 1.87.89 2.33.68.07-.53.28-.89.51-1.09-1.78-.21-3.64-.91-3.64-4.03 0-.89.31-1.62.82-2.19-.08-.21-.36-1.04.08-2.16 0 0 .67-.22 2.2.84.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.95.08 2.16.51.57.82 1.3.82 2.19 0 3.13-1.87 3.82-3.65 4.03.29.26.54.75.54 1.52 0 1.09-.01 1.97-.01 2.24 0 .22.15.48.55.4A8.12 8.12 0 0 0 16 8.2C16 3.67 12.42 0 8 0Z" /></svg></a>
+      </footer>
+    </main>
     <script src="js/shared.js"></script>
     <script src="js/script.js"></script>
   </body>
